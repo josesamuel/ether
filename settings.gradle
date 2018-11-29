@@ -1,0 +1,4 @@
+include ':EtherSample', ':Ether', ':Ether-Processor', ':EtherObservable',
+        ':EtherObservable-Processor', ':MVPSample'
+
+rootProject.name = 'Ether-parent'

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/Ether" />
+            <option value="$PROJECT_DIR$/Ether-Processor" />
+            <option value="$PROJECT_DIR$/EtherObservable" />
+            <option value="$PROJECT_DIR$/EtherObservable-Processor" />
+            <option value="$PROJECT_DIR$/EtherSample" />
+            <option value="$PROJECT_DIR$/MVPSample" />
+          </set>
+        </option>
+        <option name="resolveModulePerSourceSet" value="false" />
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

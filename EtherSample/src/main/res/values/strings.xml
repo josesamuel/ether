@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">EtherSample</string>
+    <string name="austin">Austin</string>
+    <string name="dallas">Dallas</string>
+</resources>

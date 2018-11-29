@@ -1,0 +1,23 @@
+apply plugin: 'java-library'
+
+apply plugin: 'kotlin'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    implementation deps.support.annotations
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    api "io.reactivex.rxjava2:rxjava:${versions.rxjava}"
+    api "io.reactivex.rxjava2:rxandroid:${versions.rxandroid}"
+    testImplementation "junit:junit:${versions.junit}"
+    api project(':Ether')
+}
+
+
+
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+
