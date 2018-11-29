@@ -5,6 +5,7 @@ Ether is a simple [PubSub](https://en.wikipedia.org/wiki/Publish%E2%80%93subscri
 Problems that are solved using model-view architectures can be solved much easily using Ether framework using the PubSub architecture.
 
 **Why Ether?**
+--------
 
 Let us look at a common model-view architecture - MVP
 
@@ -32,6 +33,73 @@ With Ether the above architecture can be simplified as
 
 
 Here is a comparison of how a simple problem is solved using [MVP](https://github.com/josesamuel/ether/tree/master/MVPSample/src/main/java/sample/mvp) vs [Ether](https://github.com/josesamuel/ether/tree/master/EtherSample/src/main/java/sample/ether) PubSub
+
+
+
+**Using Ether**
+--------
+
+
+* **Define the data** class, annotate it with <mark>@EtherData</mark>, specify the triggers for the data. 
+
+```kotlin
+
+//Data that will be shared
+
+@EtherData(triggerType = CityDataTrigger::class)
+data class SchoolData(val schoolCount: Int, val studentCount: Int)
+
+
+//Define the triggers that should produce the above data
+/**Triggers to produce [SchoolData]*/
+sealed class CityDataTrigger
+object Austin : CityDataTrigger()
+object Dallas : CityDataTrigger()
+
+```
+
+* **Produce the data**
+
+```groovy
+/**
+ * Publisher of [SchoolData] by extending the auto generated [AbstractSchoolDataPublisher]
+ *
+ * A Publisher can also be created using the auto generated [SchoolDataPublisher]
+ */
+class SchoolDataPublisher : AbstractSchoolDataPublisher() {
+
+    /**
+     * Gets called when the trigger for [SchoolData] is sent to the [Ether]
+     */
+    override fun onPublisherTrigger(trigger: CityDataTrigger) {
+        when (trigger) {
+            Austin -> publish(SchoolData(20, 800))
+            Dallas -> publish(SchoolData(45, 1900))
+        }
+    }
+}
+```
+
+* **Consume the data**
+
+```groovy
+/**
+ * Update the given school views based on the [SchoolData] received from [Ether]
+ *
+ * Other ways to subscribe is [Ether.subscriberOf]
+ */
+fun initSchoolSubscriber(schoolCount: TextView, studentCount: TextView) =
+
+        Ether.observableOf(SchoolData::class.java)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    schoolCount.text = it.schoolCount.toString()
+                    studentCount.text = it.studentCount.toString()
+                }
+
+```
+
+
 
 
 Getting Ether
