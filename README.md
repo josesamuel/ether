@@ -105,6 +105,7 @@ fun initSchoolSubscriber(schoolCount: TextView, studentCount: TextView) =
 Getting Ether
 --------
 
+
 Gradle dependency
 
 ```groovy
@@ -120,6 +121,8 @@ dependencies {
 
 }
 ```
+
+
 License
 -------
 
