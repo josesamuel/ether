@@ -21,7 +21,7 @@ Imagine if you could just
 * Focus on how to produce the data -- without worrying about who consumes it or how it is send to consumer
 * Focus on how to consume the data -- without worrying about who produces it or how it is delivered
 
-All that is left is focus on your application logic. Produce the data, and consume it.  
+This allows you to just focus on what is important for you -- Producing the data, and consume it without worrying about how the data moves. 
  
 This is what Ether provides
 
