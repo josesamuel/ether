@@ -1,4 +1,3 @@
-include ':EtherSample', ':Ether', ':Ether-Processor', ':EtherObservable',
-        ':EtherObservable-Processor', ':MVPSample'
+include ':Ether', ':Ether-Processor', ':EtherObservable', ':EtherObservable-Processor', ':EtherSample', ':MVPSample'
 
 rootProject.name = 'Ether-parent'
