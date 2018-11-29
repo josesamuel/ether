@@ -81,3 +81,13 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
+
+apply plugin: 'org.jetbrains.dokka-android'
+
+dokka {
+    outputFormat = 'javadoc'
+    outputDirectory = "javadoc"
+    kotlinTasks {
+        defaultKotlinTasks() + [ project("Ether").compileKotlin, project("EtherObservable").compileKotlin]
+    }
+}
