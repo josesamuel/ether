@@ -9,7 +9,7 @@ import sample.mvp.school.view.WeatherView
 /**
  * Presenter for [WeatherView]
  */
-class SchoolPresenter(view: SchoolView, val repository: Repository) : Presenter<SchoolView>(view) {
+class SchoolPresenter(view: SchoolView, private val repository: Repository) : Presenter<SchoolView>(view) {
 
 
     fun onAustinSelected() {
