@@ -1,15 +1,12 @@
 package arch.ether.processor.builder
 
-import arch.ether.IDataPublisher
-import arch.ether.IDataSubscriber
-import arch.ether.IProducer
-import arch.ether.Ether
+import arch.ether.*
 import arch.ether.annotation.EtherData
 import com.squareup.kotlinpoet.*
 import javax.lang.model.element.Element
 import javax.lang.model.type.MirroredTypeException
 import javax.lang.model.type.TypeMirror
-
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 
 /**
  * Builds the DataPublisher for the class marked as [EtherData]
@@ -33,23 +30,21 @@ internal class EtherStubsBuilder(element: Element, bindingManager: BindingManage
 
         if (triggerType != null) {
             val producerBuilder = TypeSpec.classBuilder(producerClassName)
-                    .addKdoc("Publisher of [%T]\nExtend this class to generate [%T] based on the triggers to [onPublisherTrigger]\n", ClassName.bestGuess(className), ClassName.bestGuess(className))
+                    .addKdoc("Publisher of [%T]\nExtend this class to generate [%T] based on the triggers to [onPublisherTrigger]\n\n@param context Specify the  [%T] assosiated with this\n", ClassName(packageName, className), ClassName(packageName, className), EtherContext::class)
                     .addModifiers(KModifier.ABSTRACT)
-                    .addSuperinterface(ParameterizedTypeName.get(
-                            ClassName(IDataPublisher::class.java.`package`.name, IDataPublisher::class.java.simpleName),
-                            ClassName.bestGuess(className)
-                    ))
+                    .primaryConstructor(FunSpec.constructorBuilder()
+                            .addParameter(ParameterSpec.builder("context", EtherContext::class).defaultValue("arch.ether.GLOBAL_ETHER_CONTEXT").build()).build())
+                    .addSuperinterface(ClassName(IDataPublisher::class.java.`package`.name, IDataPublisher::class.java.simpleName).parameterizedBy(ClassName.bestGuess(className)))
                     .addSuperinterface(IProducer::class)
                     .addProperty(PropertySpec.builder("publisher",
-                            ParameterizedTypeName.get(
-                                    ClassName(IDataPublisher::class.java.`package`.name, IDataPublisher::class.java.simpleName),
-                                    ClassName.bestGuess(className)
-                            ),
+                            ClassName(IDataPublisher::class.java.`package`.name, IDataPublisher::class.java.simpleName).parameterizedBy(
+                                    ClassName.bestGuess(className))
+                            ,
                             KModifier.PRIVATE)
-                            .initializer("%T.publisherOf<%T>(%T::class.java)", Ether::class, ClassName.bestGuess(className), ClassName.bestGuess(className))
+                            .initializer("%T.publisherOf<%T>(%T::class.java, context)", Ether::class, ClassName(packageName, className), ClassName(packageName, className))
                             .build()
                     )
-                    .addInitializerBlock(CodeBlock.of("Ether.subscriberOf<%T>(%T::class.java).subscribe(%T(::onPublisherTrigger))\n", triggerType.asTypeName(), triggerType.asTypeName(), IDataSubscriber::class))
+                    .addInitializerBlock(CodeBlock.of("Ether.subscriberOf<%T>(%T::class.java, context).subscribe(%T(::onPublisherTrigger))\n", triggerType.asTypeName(), triggerType.asTypeName(), IDataSubscriber::class))
 
                     .addFunction(FunSpec.builder("publish")
                             .addModifiers(KModifier.OVERRIDE)

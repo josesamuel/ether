@@ -14,8 +14,8 @@ class EtherObservable<T> private constructor() : Ether<T>() {
 
     companion object {
         @JvmStatic
-        fun <T : Any> observableOf(type: Class<T>): Flowable<T> {
-            val subscriber = subscriberOf(type)
+        fun <T : Any> observableOf(type: Class<T>, context: EtherContext = GLOBAL_ETHER_CONTEXT): Flowable<T> {
+            val subscriber = subscriberOf(type, context)
             val publishSubject = PublishSubject.create<T>()
             val dataListener = IDataSubscriber<T> { publishSubject.onNext(it) }
             return publishSubject.doOnSubscribe { subscriber.subscribe(dataListener) }
@@ -28,4 +28,4 @@ class EtherObservable<T> private constructor() : Ether<T>() {
 /**
  * Returns a [Flowable] of type [T] to listen for new data of [T] that are published
  */
-fun <T : Any> Ether.Companion.observableOf(type: Class<T>) = EtherObservable.observableOf(type)
+fun <T : Any> Ether.Companion.observableOf(type: Class<T>, context: EtherContext = GLOBAL_ETHER_CONTEXT) = EtherObservable.observableOf(type, context)

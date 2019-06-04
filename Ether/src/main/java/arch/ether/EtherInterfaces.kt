@@ -44,3 +44,14 @@ interface IDataObservable<T> {
      */
     fun unsubscribe(subscriber: IDataSubscriber<T>)
 }
+
+
+/**
+ * A context to which the [Ether] is created with
+ */
+interface EtherContext
+
+/**
+ * Default context in which Ether is created if none specified
+ **/
+val GLOBAL_ETHER_CONTEXT = object : EtherContext {}

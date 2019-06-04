@@ -60,43 +60,63 @@ open class Ether<T> protected constructor() : IDataPublisher<T>, IDataObservable
     @Suppress("UNCHECKED_CAST")
     companion object {
 
-        private val pubSubDataBuses = mutableMapOf<Any, Ether<*>>()
+        private val etherMap = mutableMapOf<EtherContext, MutableMap<Any, Ether<*>>>()
 
         /**
          * Returns an [Ether] for Class of type [T]
          */
-        private fun <T> of(type: Class<T>): Ether<T> {
-            synchronized(pubSubDataBuses) {
-                var dataBus: Ether<T>? = pubSubDataBuses[type] as Ether<T>?
-                if (dataBus == null) {
-                    dataBus = Ether()
-                    pubSubDataBuses[type] = dataBus
+        private fun <T> of(type: Class<T>, context: EtherContext = GLOBAL_ETHER_CONTEXT): Ether<T> {
+            synchronized(etherMap) {
+                var pubSubDataBuses: MutableMap<Any, Ether<*>>? = etherMap[context]
+                if (pubSubDataBuses == null) {
+                    pubSubDataBuses = mutableMapOf()
+                    etherMap[context] = pubSubDataBuses
                 }
-                return dataBus
+                synchronized(pubSubDataBuses) {
+                    var dataBus: Ether<T>? = pubSubDataBuses[type] as Ether<T>?
+                    if (dataBus == null) {
+                        dataBus = Ether()
+                        pubSubDataBuses[type] = dataBus
+                    }
+                    return dataBus
+                }
             }
         }
 
         /**
          * Returns an [IDataPublisher] for type [T]
+         *
+         * @param type The [Class] of the type this Ether publishes
+         * @param context The [EtherContext] where this exist
          */
         @JvmStatic
-        fun <T : Any> publisherOf(type: Class<T>): IDataPublisher<T> = of(type)
+        fun <T : Any> publisherOf(type: Class<T>, context: EtherContext = GLOBAL_ETHER_CONTEXT): IDataPublisher<T> = of(type, context)
 
         /**
          * Returns an [IDataObservable] for type [T]
+         *
+         * @param type The [Class] of the type this Ether emits
+         * @param context The [EtherContext] where this exist
          */
         @JvmStatic
-        fun <T : Any> subscriberOf(type: Class<T>): IDataObservable<T> = of(type)
+        fun <T : Any> subscriberOf(type: Class<T>, context: EtherContext = GLOBAL_ETHER_CONTEXT): IDataObservable<T> = of(type, context)
 
         /**
          * Clear all the publishers and subscribers
+         *
+         * @param context The [EtherContext] where this exist
          */
         @JvmStatic
-        fun clear() {
-            pubSubDataBuses.values.forEach {
-                it.close()
+        fun clear(context: EtherContext = GLOBAL_ETHER_CONTEXT) {
+            synchronized(etherMap) {
+                val pubSubDataBuses: MutableMap<Any, Ether<*>>? = etherMap[context]
+                if (pubSubDataBuses != null) {
+                    pubSubDataBuses.values.forEach {
+                        it.close()
+                    }
+                    pubSubDataBuses.clear()
+                }
             }
-            pubSubDataBuses.clear()
         }
     }
 
