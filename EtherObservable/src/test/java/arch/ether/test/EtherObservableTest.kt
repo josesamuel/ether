@@ -3,6 +3,8 @@ package arch.ether.test
 import arch.ether.*
 import org.junit.Assert
 import org.junit.Test
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 /**
  * Test functionality of [Ether]
@@ -45,9 +47,12 @@ class EtherObservableTest {
             }
         }
 
+        Assert.assertNull(Ether.subscriberOf(String::class.java).getCurrentData())
+
         publishedData.forEach {
             expectedData = it
             stringProducer1.publish(it)
+            Assert.assertEquals(expectedData, Ether.subscriberOf(String::class.java).getCurrentData())
         }
 
         expectedData = ""
@@ -59,7 +64,22 @@ class EtherObservableTest {
 
         Assert.assertEquals(publishedData.size * 12, totalReceived)
 
+        var gotLastItem = false
+        var lock = CountDownLatch(1)
+        Ether.observableOf(String::class.java).subscribe {
+            //expect the last tring
+            Assert.assertEquals("5", it)
+            gotLastItem = true
+            lock.countDown()
+        }
+
+        lock.await(1000, TimeUnit.MILLISECONDS)
+        Assert.assertTrue(gotLastItem)
+
+        Assert.assertEquals("5", Ether.subscriberOf(String::class.java).getCurrentData())
+
         Ether.clear()
+        Assert.assertNull(Ether.subscriberOf(String::class.java).getCurrentData())
     }
 
     @Test
@@ -137,11 +157,14 @@ class EtherObservableTest {
         }
 
 
+        Assert.assertNull(Ether.subscriberOf(String::class.java).getCurrentData())
+        Assert.assertNull(Ether.subscriberOf(String::class.java, context).getCurrentData())
 
 
         publishedData.forEach {
             expectedData = it
             stringProducer1.publish(it)
+            Assert.assertEquals(expectedData, Ether.subscriberOf(String::class.java).getCurrentData())
         }
 
         expectedData = ""
@@ -155,6 +178,7 @@ class EtherObservableTest {
         publishedDataWithContext.forEach {
             expectedDataWithContext = it
             stringProducer1WithContext.publish(it)
+            Assert.assertEquals(expectedDataWithContext, Ether.subscriberOf(String::class.java, context).getCurrentData())
         }
 
         expectedDataWithContext = ""

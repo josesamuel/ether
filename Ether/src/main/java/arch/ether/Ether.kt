@@ -56,6 +56,8 @@ open class Ether<T> protected constructor() : IDataPublisher<T>, IDataObservable
         initialized = false
     }
 
+    override fun getCurrentData() = data
+
 
     @Suppress("UNCHECKED_CAST")
     companion object {
@@ -119,6 +121,5 @@ open class Ether<T> protected constructor() : IDataPublisher<T>, IDataObservable
             }
         }
     }
-
 
 }

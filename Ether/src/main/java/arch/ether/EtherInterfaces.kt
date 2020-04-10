@@ -43,6 +43,11 @@ interface IDataObservable<T> {
      * Un subscribe the given subscriber
      */
     fun unsubscribe(subscriber: IDataSubscriber<T>)
+
+    /**
+     * Returns the current data if any
+     */
+    fun getCurrentData() : T?
 }
 
 

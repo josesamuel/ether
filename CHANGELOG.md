@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Version 1.0.2 *(2020-04-10)*
+----------------------------
+
+Starting subscription with last data.
+
+
 Version 1.0.1 *(2019-06-03)*
 ----------------------------
 

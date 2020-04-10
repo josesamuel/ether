@@ -18,7 +18,11 @@ class EtherObservable<T> private constructor() : Ether<T>() {
             val subscriber = subscriberOf(type, context)
             val publishSubject = PublishSubject.create<T>()
             val dataListener = IDataSubscriber<T> { publishSubject.onNext(it) }
-            return publishSubject.doOnSubscribe { subscriber.subscribe(dataListener) }
+            return publishSubject.startWith { os->
+                        subscriber.getCurrentData()?.let { os.onNext(it) }
+                        os.onComplete()
+                    }
+                    .doOnSubscribe { subscriber.subscribe(dataListener) }
                     .doOnDispose { subscriber.unsubscribe(dataListener) }
                     .toFlowable(BackpressureStrategy.BUFFER)
         }
