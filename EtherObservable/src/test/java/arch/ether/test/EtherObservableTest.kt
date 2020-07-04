@@ -3,6 +3,7 @@ package arch.ether.test
 import arch.ether.*
 import org.junit.Assert
 import org.junit.Test
+import java.lang.Exception
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -45,6 +46,88 @@ class EtherObservableTest {
                 Assert.assertEquals(expectedData, it)
                 totalReceived++
             }
+        }
+
+        Assert.assertNull(Ether.subscriberOf(String::class.java).getCurrentData())
+
+        publishedData.forEach {
+            expectedData = it
+            stringProducer1.publish(it)
+            Assert.assertEquals(expectedData, Ether.subscriberOf(String::class.java).getCurrentData())
+        }
+
+        expectedData = ""
+
+        publishedData.forEach {
+            expectedData = it
+            stringProducer2.publish(it)
+        }
+
+        Assert.assertEquals(publishedData.size * 12, totalReceived)
+
+        var gotLastItem = false
+        var lock = CountDownLatch(1)
+        Ether.observableOf(String::class.java).subscribe {
+            //expect the last tring
+            Assert.assertEquals("5", it)
+            gotLastItem = true
+            lock.countDown()
+        }
+
+        lock.await(1000, TimeUnit.MILLISECONDS)
+        Assert.assertTrue(gotLastItem)
+
+        Assert.assertEquals("5", Ether.subscriberOf(String::class.java).getCurrentData())
+
+        Ether.clear()
+        Assert.assertNull(Ether.subscriberOf(String::class.java).getCurrentData())
+    }
+
+    @Test
+    fun testPubSubWithException() {
+        val stringProducer1 = Ether.publisherOf(String::class.java)
+        val stringProducer2 = Ether.publisherOf(String::class.java)
+
+        val subscribers = arrayOf(
+                Ether.subscriberOf(String::class.java),
+                Ether.subscriberOf(String::class.java)
+        )
+
+        val observers = arrayOf(
+                Ether.observableOf(String::class.java),
+                Ether.observableOf(String::class.java),
+                EtherObservable.observableOf(String::class.java),
+                EtherObservable.observableOf(String::class.java)
+        )
+
+        val publishedData = arrayOf("1", "2", "3", "4", "5")
+        var expectedData = ""
+        var totalReceived = 0;
+
+        subscribers.forEachIndexed { index, dataObservable ->
+            dataObservable.subscribe(IDataSubscriber {
+                Assert.assertEquals(expectedData, it)
+                totalReceived++
+                println("Data on Subscriber $index $it")
+                if (index == 0) {
+                    throw Exception()
+                }
+            })
+        }
+
+        observers.forEachIndexed { index, flowable ->
+            flowable.subscribe ({
+                kotlin.runCatching {
+                    println("Data on Flowable $index $it")
+                    Assert.assertEquals(expectedData, it)
+                    totalReceived++
+                    if (index == 1 || index == 2) {
+                        throw Exception()
+                    }
+                }
+            }, {
+                println("Got exception $index $it")
+            })
         }
 
         Assert.assertNull(Ether.subscriberOf(String::class.java).getCurrentData())

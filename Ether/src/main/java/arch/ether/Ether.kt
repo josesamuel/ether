@@ -1,5 +1,8 @@
 package arch.ether
 
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+
 
 /**
  * Ether is a PubSub data bus where data can be published and subscribed.
@@ -11,7 +14,7 @@ package arch.ether
  */
 open class Ether<T> protected constructor() : IDataPublisher<T>, IDataObservable<T> {
 
-    private val subscribers = mutableSetOf<IDataSubscriber<T>>()
+    private val subscribers:MutableSet<IDataSubscriber<T>> = Collections.newSetFromMap(ConcurrentHashMap())
     private var data: T? = null
     private var initialized = false
 
@@ -62,7 +65,7 @@ open class Ether<T> protected constructor() : IDataPublisher<T>, IDataObservable
     @Suppress("UNCHECKED_CAST")
     companion object {
 
-        private val etherMap = mutableMapOf<EtherContext, MutableMap<Any, Ether<*>>>()
+        private val etherMap = ConcurrentHashMap<EtherContext, MutableMap<Any, Ether<*>>>()
 
         /**
          * Returns an [Ether] for Class of type [T]
