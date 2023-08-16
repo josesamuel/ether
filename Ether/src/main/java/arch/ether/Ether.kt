@@ -121,6 +121,7 @@ open class Ether<T> protected constructor() : IDataPublisher<T>, IDataObservable
                     }
                     pubSubDataBuses.clear()
                 }
+                etherMap.remove(context)
             }
         }
     }

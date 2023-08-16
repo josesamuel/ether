@@ -112,12 +112,12 @@ Gradle dependency
 dependencies {
 
 	//Java library
-	implementation 'com.josesamuel:ether:1.0.3'
-    kapt 'com.josesamuel:ether-processor:1.0.3'
+	implementation 'com.josesamuel:ether:1.0.4'
+    kapt 'com.josesamuel:ether-processor:1.0.4'
    
     //If you want observable extensions (RxJava) on top of the above, use the following instead 
-    implementation 'com.josesamuel:ether-observable:1.0.3'
-    kapt 'com.josesamuel:ether-observable-processor:1.0.3'
+    implementation 'com.josesamuel:ether-observable:1.0.4'
+    kapt 'com.josesamuel:ether-observable-processor:1.0.4'
 
 }
 ```
